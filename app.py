@@ -16,13 +16,24 @@ from reportlab.lib import colors
 from models import db, User, Item, Claim, Message, Feedback
 from ml_engine import match_items, extract_dominant_color_name
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dev-secret-key-bca-portal'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lost_and_found.db'
+# Initialize Flask with /tmp instance path (mandatory for Vercel serverless)
+app = Flask(__name__, instance_path='/tmp')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-bca-portal')
+
+# Configure database dynamically: Neon PostgreSQL if available, fallback to /tmp SQLite
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:////tmp/lost_and_found.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Image uploads
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+# Image uploads: write to /tmp on serverless environments to prevent read-only crashes
+if os.environ.get('VERCEL'):
+    UPLOAD_FOLDER = os.path.join('/tmp', 'uploads')
+else:
+    UPLOAD_FOLDER = os.path.join('static', 'uploads')
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -33,7 +44,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'iyerv259@gmail.com')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'ywdr jabt Idtl wogt')
-app.config['MAIL_DEFAULT_SENDER'] = 'iyerv259@gmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', 'iyerv259@gmail.com')
 
 mail = Mail(app)
 db.init_app(app)
@@ -46,8 +57,12 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Auto-create tables in Neon PostgreSQL on cold boot
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"Database initialization notice: {e}")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -123,7 +138,6 @@ def generate_clearance_pdf(claim, item):
 
 @app.route('/')
 def index():
-    # Only show items that are OPEN and NOT stuck in pending payment
     items = Item.query.filter(
         Item.status == 'OPEN',
         Item.payment_status != 'PENDING'
@@ -186,7 +200,6 @@ def report_item():
         description = request.form.get('description', '').strip()
         is_urgent = request.form.get('high_alert') == 'yes'
 
-        # Server-side duplicate prevention check (within last 30 seconds)
         recent_cutoff = datetime.utcnow() - timedelta(seconds=30)
         duplicate_check = Item.query.filter(
             Item.user_id == current_user.id,
@@ -210,7 +223,10 @@ def report_item():
                 image_filename = f"{uuid.uuid4().hex[:8]}_{original_name}"
                 saved_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
                 file.save(saved_path)
-                color_detected = extract_dominant_color_name(saved_path)
+                try:
+                    color_detected = extract_dominant_color_name(saved_path)
+                except Exception as e:
+                    print(f"Color extraction bypassed: {e}")
 
         final_desc = f"{description} (Detected color: {color_detected})" if color_detected else description
 
