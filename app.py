@@ -39,7 +39,7 @@ mail = Mail(app)
 db.init_app(app)
 
 login_manager = LoginManager()
-login_manager.login_view = 'login'git remote set-url origin https://github.com/DivyanshuSharma6/lost-and-found-.git
+login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 @login_manager.user_loader
