@@ -1,0 +1,24 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python Bytecode & Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite Database
+*.db
+instance/
+
+# User Uploaded Photos (keep folder, ignore files)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# macOS specific files
+.DS_Store
+
+# Environment / Secret Keys
+.env

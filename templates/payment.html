@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MUJ Pay - High Alert Priority</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --muj-navy: #0D2240;
+            --muj-orange: #E65100;
+        }
+        body {
+            background-color: #F4F6F9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .pay-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border-top: 5px solid #dc3545;
+            box-shadow: 0 15px 35px rgba(13, 34, 64, 0.12);
+            width: 100%;
+            max-width: 440px;
+            padding: 35px;
+        }
+        .qr-placeholder {
+            width: 180px;
+            height: 180px;
+            background: #f8f9fa;
+            border: 2px dashed #ced4da;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="pay-card text-center">
+    <span class="badge bg-danger text-uppercase px-3 py-1 rounded-pill mb-3">
+        <i class="bi bi-broadcast-pin me-1"></i> High Alert Priority
+    </span>
+    <h4 class="fw-bold" style="color: var(--muj-navy);">Campus Fast-Track Recovery</h4>
+    <p class="text-secondary small mb-4">Item: <strong>{{ item.title }}</strong></p>
+
+    <div class="card p-3 bg-light border-0 rounded-3 mb-4 text-start small">
+        <div class="d-flex justify-content-between mb-1">
+            <span>High-Priority Feed Pinning</span>
+            <span class="fw-semibold">₹35.00</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+            <span>Security Desk Broadcast</span>
+            <span class="fw-semibold">₹14.00</span>
+        </div>
+        <hr class="my-2">
+        <div class="d-flex justify-content-between fw-bold fs-6">
+            <span>Total Payable:</span>
+            <span class="text-danger">₹49.00</span>
+        </div>
+    </div>
+
+    <!-- Campus Mock UPI QR -->
+    <div class="qr-placeholder">
+        <div class="text-center">
+            <i class="bi bi-qr-code fs-1 text-secondary"></i>
+            <span class="d-block small text-muted mt-1">Scan via GPay / PhonePe / Paytm</span>
+        </div>
+    </div>
+
+    <form action="/payment/confirm/{{ item.id }}" method="POST">
+        <div class="mb-3">
+            <input type="text" class="form-control text-center font-monospace" value="muj-security@upi" readonly>
+        </div>
+        <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold shadow-sm">
+            <i class="bi bi-patch-check-fill me-1"></i> Authorize & Pin to Feed (₹49)
+        </button>
+    </form>
+
+    <a href="/" class="small text-secondary text-decoration-none d-block mt-3">Skip boost, publish as standard post</a>
+</div>
+
+</body>
+</html>

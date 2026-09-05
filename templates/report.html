@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Item - MUJ Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --muj-orange: #E65100;
+            --muj-orange-hover: #D84315;
+            --muj-navy: #0D2240;
+            --muj-bg: #F4F6F9;
+        }
+        body {
+            background-color: var(--muj-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 40px 15px;
+        }
+        .report-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #E5E7EB;
+            border-top: 4px solid var(--muj-orange);
+            box-shadow: 0 10px 25px rgba(13, 34, 64, 0.08);
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 35px;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid #D1D5DB;
+        }
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
+            border-color: var(--muj-orange);
+        }
+        .btn-brand {
+            background-color: var(--muj-orange);
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            border: none;
+            transition: 0.2s ease;
+        }
+        .btn-brand:hover {
+            background-color: var(--muj-orange-hover);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="report-card">
+    <div class="d-flex align-items-center mb-3">
+        <div class="p-2 rounded-circle me-3 text-white" style="background-color: var(--muj-navy);">
+            <i class="bi bi-megaphone-fill fs-4 px-1"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold m-0" style="color: var(--muj-navy);">Report Campus Item</h4>
+            <small class="text-muted">Dual-Modal AI analyzes text & image colors automatically</small>
+        </div>
+    </div>
+
+    <!-- onsubmit locks down form button instantly to prevent multi-submissions -->
+    <form id="reportForm" method="POST" enctype="multipart/form-data" onsubmit="document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerHTML = '<span class=\'spinner-border spinner-border-sm me-2\'></span>Processing...';">
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Report Type</label>
+            <select name="item_type" class="form-select" required>
+                <option value="LOST">I Lost an Item</option>
+                <option value="FOUND">I Found an Item</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Item Title</label>
+            <input type="text" name="title" class="form-control" placeholder="e.g. Dell 65W Laptop Charger, Black Wallet" required>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Category</label>
+                <select name="category" class="form-select" required>
+                    <option value="Electronics">Electronics</option>
+                    <option value="ID Cards & Wallets">ID Cards & Wallets</option>
+                    <option value="Books & Notes">Books & Notes</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold text-secondary">Campus Location</label>
+                <input type="text" name="location" class="form-control" placeholder="e.g. Central Library, Block 2, Mess" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Detailed Description</label>
+            <textarea name="description" rows="3" class="form-control" placeholder="Specify color, model, scratches, stickers, or distinctive marks..." required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Attach Photo (Optional)</label>
+            <input type="file" name="image" class="form-control" accept="image/*">
+            <small class="text-muted" style="font-size: 0.75rem;">Computer Vision extracts primary colors to accelerate match scoring.</small>
+        </div>
+
+        <!-- High Alert Option -->
+        <div class="card border-danger bg-danger bg-opacity-10 p-3 rounded-3 mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="high_alert" value="yes" id="highAlertCheck">
+                <label class="form-check-label fw-bold text-danger" for="highAlertCheck">
+                    <i class="bi bi-lightning-charge-fill me-1"></i> Boost to Campus High-Alert Priority (₹49)
+                </label>
+            </div>
+            <span class="small text-secondary ps-4 pt-1 d-block" style="font-size: 0.8rem;">
+                Pins your post to the very top of the feed with an urgent badge and notifies security desk directly.
+            </span>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn btn-brand w-100 shadow-sm mb-2">
+            Proceed
+        </button>
+        <a href="/" class="btn btn-link w-100 text-center text-secondary text-decoration-none small">Cancel</a>
+    </form>
+</div>
+
+</body>
+</html>

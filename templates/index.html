@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUJ AI Lost & Found Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --muj-orange: #E65100;
+            --muj-orange-hover: #D84315;
+            --muj-navy: #0D2240;
+            --muj-navy-dark: #08162B;
+            --muj-bg: #F4F6F9;
+        }
+        body {
+            background-color: var(--muj-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #1F2937;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .btn-brand {
+            background-color: var(--muj-orange);
+            color: #ffffff;
+            border: none;
+            transition: 0.2s ease;
+        }
+        .btn-brand:hover {
+            background-color: var(--muj-orange-hover);
+            color: #ffffff;
+        }
+        .btn-outline-brand {
+            border: 1.5px solid var(--muj-orange);
+            color: var(--muj-orange);
+            background: transparent;
+        }
+        .btn-outline-brand:hover {
+            background-color: var(--muj-orange);
+            color: #ffffff;
+        }
+        .navbar-custom {
+            background-color: var(--muj-navy);
+            border-bottom: 3px solid var(--muj-orange);
+        }
+        .hero-section {
+            background: linear-gradient(rgba(13, 34, 64, 0.80), rgba(8, 22, 43, 0.92)), 
+                        url('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl5Q5Cb_sZ1wCnlCgqPWOIxeS_Ja4-2ttJJjHLw6ykhJaD_Xws3rpGQVpq6IrrCYlDksLHVlZemW_eWMidN68IZsSvQeL5XqXzRwcjr7JuwYQCR1-NrJUYvHQlMzA96eZwzdG2g2nMQdhRI=s1360-w1360-h1020-rw');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            padding: 70px 0 50px 0;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px -5px rgba(13, 34, 64, 0.35);
+        }
+        .item-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 22px -5px rgba(230, 81, 0, 0.18);
+        }
+        .item-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .stat-badge {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 18px;
+        }
+        .high-alert-border {
+            border: 2px solid #dc3545 !important;
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.25) !important;
+        }
+        footer {
+            background-color: var(--muj-navy-dark);
+            color: #9CA3AF;
+            margin-top: auto;
+            border-top: 3px solid var(--muj-orange);
+        }
+        footer a {
+            color: #D1D5DB;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+        footer a:hover {
+            color: var(--muj-orange);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Global Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold tracking-wide" href="/" style="color: #ffffff;">
+      <i class="bi bi-radar me-1" style="color: var(--muj-orange);"></i> MUJ CAMPUS RADAR
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+        <li class="nav-item">
+          <a class="nav-link text-light small" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">
+            <i class="bi bi-info-circle me-1"></i> About System
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light small" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+            <i class="bi bi-chat-heart me-1"></i> Feedback
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light small" href="#faqSection">
+            <i class="bi bi-question-circle me-1"></i> FAQs
+          </a>
+        </li>
+      </ul>
+      <div class="navbar-nav align-items-center gap-2">
+        {% if current_user.is_authenticated %}
+          <span class="text-white-50 me-2 small">Logged in: <strong class="text-white">{{ current_user.name }}</strong></span>
+          {% if current_user.role == 'ADMIN' %}
+            <a class="btn btn-warning btn-sm px-3 fw-semibold" href="/admin">Admin Panel</a>
+          {% endif %}
+          <a class="btn btn-brand btn-sm px-3 shadow-sm fw-semibold" href="/report">
+            <i class="bi bi-plus-circle me-1"></i> Report Item
+          </a>
+          <a class="btn btn-outline-light btn-sm px-3" href="/logout">Logout</a>
+        {% else %}
+          <a class="btn btn-outline-light btn-sm px-3" href="/login">Student Login</a>
+          <a class="btn btn-brand btn-sm px-3 shadow-sm fw-semibold" href="/register">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container text-center">
+    <span class="badge px-3 py-2 rounded-pill mb-3 text-uppercase shadow-sm" style="background-color: var(--muj-orange);">
+      MUJ Intelligent Asset Recovery
+    </span>
+    <h1 class="display-5 fw-bold mb-3">Campus Lost & Found Portal</h1>
+    <p class="lead text-white-50 mx-auto mb-4" style="max-width: 680px;">
+      Empowering students with TF-IDF Machine Learning item matching, Computer Vision color tags, and live GPS coordinate handovers.
+    </p>
+
+    <!-- Quick Metrics Strip -->
+    <div class="row justify-content-center g-3 mb-4 text-start" style="max-width: 720px; margin: 0 auto;">
+      <div class="col-4">
+        <div class="stat-badge text-center">
+          <h4 class="fw-bold m-0 text-white">{{ items|length }}</h4>
+          <span class="small text-white-50" style="font-size: 0.75rem;">Active Postings</span>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat-badge text-center">
+          <h4 class="fw-bold m-0 text-warning">99.4%</h4>
+          <span class="small text-white-50" style="font-size: 0.75rem;">Privacy Guard</span>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat-badge text-center">
+          <h4 class="fw-bold m-0 text-success"><i class="bi bi-shield-check"></i></h4>
+          <span class="small text-white-50" style="font-size: 0.75rem;">Verified Claims</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-2">
+      {% if current_user.is_authenticated %}
+        <a href="/report" class="btn btn-lg btn-brand px-4 py-2 rounded-pill shadow fw-semibold">Report Lost/Found Item</a>
+      {% else %}
+        <a href="/register" class="btn btn-lg btn-brand px-4 py-2 rounded-pill shadow fw-semibold">Create Student Account</a>
+      {% endif %}
+      <button class="btn btn-lg btn-outline-light px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#aboutModal">How It Works</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Feed -->
+<div class="container pb-4">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show mb-4 rounded-3 shadow-sm" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Live Filter Bar -->
+  <div class="card p-3 border-0 shadow-sm rounded-4 mb-4">
+    <div class="row g-2">
+      <div class="col-md-8">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+          <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Search keywords (e.g. ID card, bottle, laptop, block 2)..." onkeyup="filterCards()">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select id="typeFilter" class="form-select" onchange="filterCards()">
+          <option value="ALL">All Items (Lost & Found)</option>
+          <option value="LOST">Lost Reports Only</option>
+          <option value="FOUND">Found Reports Only</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="row g-4" id="itemGrid">
+    {% for item in items %}
+    <div class="col-md-6 col-lg-4 item-column" data-type="{{ item.item_type }}" data-content="{{ item.title }} {{ item.description }} {{ item.location }} {{ item.category }}">
+      <div class="card h-100 item-card shadow-sm {% if item.is_high_alert %}high-alert-border{% endif %}">
+        {% if item.image_filename %}
+          <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" class="item-image" alt="{{ item.title }}">
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center text-muted" style="height: 180px; background-color: #F9FAFB;">
+            <i class="bi bi-image fs-1 text-secondary opacity-50"></i>
+          </div>
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+          {% if item.is_high_alert %}
+            <div class="badge bg-danger mb-2 text-uppercase fw-bold shadow-sm align-self-start">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i> HIGH ALERT PRIORITY
+            </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge {% if item.item_type == 'LOST' %}bg-danger{% else %}bg-success{% endif %} rounded-pill px-3 py-1">
+              {{ item.item_type }}
+            </span>
+            <span class="badge bg-light text-dark border">{{ item.category }}</span>
+          </div>
+
+          <h5 class="card-title fw-bold" style="color: var(--muj-navy);">{{ item.title }}</h5>
+          <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ item.location }}</p>
+          <p class="card-text text-secondary small flex-grow-1">{{ item.description }}</p>
+
+          <div class="mt-3 pt-2 border-top">
+            {% if item.item_type == 'FOUND' %}
+              {% if current_user.is_authenticated and item.user_id == current_user.id %}
+                <button id="trackBtn-{{ item.id }}" class="btn btn-sm btn-warning w-100 fw-semibold mb-2" onclick="toggleShareLocation({{ item.id }})">
+                  <i class="bi bi-broadcast me-1"></i> Share Live Location
+                </button>
+              {% else %}
+                <a href="/track/{{ item.id }}" class="btn btn-sm btn-outline-brand w-100 fw-semibold mb-2">
+                  <i class="bi bi-geo-fill me-1"></i> Track Finder on Map
+                </a>
+              {% endif %}
+            {% endif %}
+
+            {% if item.item_type == 'FOUND' and item.status == 'OPEN' %}
+              {% if current_user.is_authenticated and item.user_id != current_user.id %}
+                <a href="/claim/{{ item.id }}" class="btn btn-sm btn-brand w-100 fw-semibold mb-2">
+                  <i class="bi bi-shield-check me-1"></i> Claim Item
+                </a>
+              {% endif %}
+            {% endif %}
+
+            {% if current_user.is_authenticated and item.user_id != current_user.id %}
+              <a href="/chat/{{ item.id }}/{{ item.user_id }}" class="btn btn-sm btn-outline-secondary w-100 fw-semibold mb-2">
+                <i class="bi bi-chat-dots me-1"></i> Anonymous Chat
+              </a>
+            {% endif %}
+
+            <!-- User Owner & Admin Delete Action -->
+            {% if current_user.is_authenticated and (item.user_id == current_user.id or current_user.role == 'ADMIN') %}
+              <form action="/item/delete/{{ item.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this listing permanently?');" class="mt-2">
+                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                  <i class="bi bi-trash3 me-1"></i> Delete My Post
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+      <h5 class="text-muted">No active items reported on campus yet.</h5>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Campus FAQ Section -->
+  <div class="mt-5 pt-4" id="faqSection">
+    <h4 class="fw-bold text-center mb-1" style="color: var(--muj-navy);">Frequently Asked Questions</h4>
+    <p class="text-muted text-center small mb-4">Guidelines on recovering your belongings inside Manipal University Jaipur</p>
+
+    <div class="accordion shadow-sm rounded-4 overflow-hidden border-0" id="faqAccordion" style="max-width: 800px; margin: 0 auto;">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+            Where should I physically take an item I found on campus?
+          </button>
+        </h2>
+        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body text-secondary small">
+            You can hold the item and arrange an anonymous handover in a public area (such as the Central Library desk or Student Activity Area), or hand it directly to the Central Security Control Room near Gate 1.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+            How does the AI auto-match items?
+          </button>
+        </h2>
+        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body text-secondary small">
+            The platform applies TF-IDF (Term Frequency-Inverse Document Frequency) text modeling and Pillow Computer Vision color extraction. When a match score hits 70% or higher, the system alerts the owner automatically.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+            What is Campus High-Alert Priority?
+          </button>
+        </h2>
+        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body text-secondary small">
+            For critical items like room keys, wallets, or government IDs, students can activate High-Alert Priority (₹49) to pin the listing to the top of the campus feed and flag it in the security dashboard.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- About Modal -->
+<div class="modal fade" id="aboutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header text-white" style="background-color: var(--muj-navy);">
+        <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2"></i>About MUJ Campus Radar</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="text-secondary small">
+          <strong>MUJ Campus Radar</strong> is an intelligent asset recovery ecosystem engineered to replace chaotic social media messages and physical notice boards across Manipal University Jaipur.
+        </p>
+        <h6 class="fw-bold" style="color: var(--muj-orange);">System Highlights</h6>
+        <ul class="text-secondary small ps-3">
+          <li><strong>NLP Matching:</strong> Scikit-learn cosine similarity pairs lost reports with found reports.</li>
+          <li><strong>Computer Vision:</strong> Auto-extracts primary color tags from item photos.</li>
+          <li><strong>Contactless Privacy:</strong> Share live Leaflet GPS coordinates without disclosing personal phone numbers.</li>
+          <li><strong>Audited Handovers:</strong> Download official PDF clearance slips for security checkpoints.</li>
+        </ul>
+        <div class="p-3 bg-light rounded-3 text-muted small mt-3">
+          <i class="bi bi-laptop me-1"></i> Developed as a Major Academic Capstone Project &bull; Manipal University Jaipur.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header text-white" style="background-color: var(--muj-navy);">
+        <h5 class="modal-title fw-bold"><i class="bi bi-chat-heart me-2"></i>Feedback & Bug Report</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/submit-feedback" method="POST">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Your Name</label>
+            <input type="text" name="name" class="form-control" value="{% if current_user.is_authenticated %}{{ current_user.name }}{% endif %}" placeholder="Optional or Anonymous">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Campus Email</label>
+            <input type="email" name="email" class="form-control" value="{% if current_user.is_authenticated %}{{ current_user.email }}{% endif %}" placeholder="name@jaipur.manipal.edu">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Feedback Category</label>
+            <select name="category" class="form-select">
+              <option value="Feature Suggestion">Feature Suggestion</option>
+              <option value="Bug Report">Report a Bug</option>
+              <option value="Campus Security Issue">Campus Security Question</option>
+              <option value="General">General Feedback</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Message</label>
+            <textarea name="message" class="form-control" rows="3" placeholder="Tell us what you'd like improved..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer bg-light border-0">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-brand btn-sm px-3">Send Feedback</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Institutional Footer -->
+<footer class="py-4">
+  <div class="container">
+    <div class="row g-4 py-2">
+      <div class="col-md-5">
+        <h5 class="text-white fw-bold"><i class="bi bi-radar text-warning me-1"></i> MUJ CAMPUS RADAR</h5>
+        <p class="small text-secondary mb-2" style="max-width: 380px;">
+          Official Smart Lost & Found Portal for Manipal University Jaipur students, faculty, and administrative departments.
+        </p>
+        <span class="badge bg-dark text-white-50 border border-secondary">v2.4 Production Build</span>
+      </div>
+      <div class="col-md-3">
+        <h6 class="text-white fw-semibold mb-3">Quick Navigation</h6>
+        <ul class="list-unstyled small d-flex flex-column gap-2">
+          <li><a href="/">Campus Feed</a></li>
+          <li><a href="/report">Report an Item</a></li>
+          <li><a href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">About Portal</a></li>
+          <li><a href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">Report an Issue</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="text-white fw-semibold mb-3">Campus Assistance</h6>
+        <p class="small text-secondary m-0"><i class="bi bi-geo-alt me-2 text-warning"></i>Dehmi Kalan, Jaipur-Ajmer Expressway, Rajasthan 303007</p>
+        <p class="small text-secondary m-0 mt-1"><i class="bi bi-telephone me-2 text-warning"></i>Security Control: +91 141 3999 100</p>
+        <p class="small text-secondary m-0 mt-1"><i class="bi bi-envelope me-2 text-warning"></i>support@jaipur.manipal.edu</p>
+      </div>
+    </div>
+    <div class="border-top border-secondary pt-3 mt-3 d-flex flex-column flex-md-row justify-content-between align-items-center small">
+      <span>&copy; 2026 Manipal University Jaipur. All rights reserved.</span>
+      <span class="text-secondary">AI-Driven Capstone Project &bull; Built with Flask &amp; Scikit-learn</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script>
+function filterCards() {
+    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const typeVal = document.getElementById('typeFilter').value;
+    const cards = document.querySelectorAll('.item-column');
+
+    cards.forEach(card => {
+        const content = card.getAttribute('data-content').toLowerCase();
+        const type = card.getAttribute('data-type');
+        const matchesSearch = content.includes(searchVal);
+        const matchesType = (typeVal === 'ALL') || (type === typeVal);
+
+        card.style.display = (matchesSearch && matchesType) ? "" : "none";
+    });
+}
+
+let watchId = null;
+function toggleShareLocation(itemId) {
+    const btn = document.getElementById(`trackBtn-${itemId}`);
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported by your browser.");
+        return;
+    }
+    if (watchId === null) {
+        watchId = navigator.geolocation.watchPosition(
+            (pos) => {
+                fetch(`/api/item/${itemId}/update-location`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({lat: pos.coords.latitude, lng: pos.coords.longitude})
+                });
+                btn.innerHTML = `<i class="bi bi-broadcast-pin me-1"></i> Live GPS Broadcasting...`;
+                btn.className = "btn btn-sm btn-danger w-100 fw-semibold mb-2";
+            },
+            (err) => alert("GPS Error: " + err.message),
+            { enableHighAccuracy: true }
+        );
+    } else {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        btn.innerHTML = `<i class="bi bi-broadcast me-1"></i> Share Live Location`;
+        btn.className = "btn btn-sm btn-warning w-100 fw-semibold mb-2";
+    }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

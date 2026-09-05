@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - MUJ Lost & Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --muj-orange: #E65100;
+            --muj-orange-hover: #D84315;
+            --muj-navy: #0D2240;
+        }
+        body {
+            background: linear-gradient(rgba(13, 34, 64, 0.82), rgba(8, 22, 43, 0.92)), 
+                        url('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl5Q5Cb_sZ1wCnlCgqPWOIxeS_Ja4-2ttJJjHLw6ykhJaD_Xws3rpGQVpq6IrrCYlDksLHVlZemW_eWMidN68IZsSvQeL5XqXzRwcjr7JuwYQCR1-NrJUYvHQlMzA96eZwzdG2g2nMQdhRI=s1360-w1360-h1020-rw');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(14px);
+            border-radius: 16px;
+            border-top: 4px solid var(--muj-orange);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 420px;
+            padding: 38px 32px;
+        }
+        .icon-circle {
+            background-color: var(--muj-orange);
+            color: #ffffff;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(230, 81, 0, 0.35);
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid #D1D5DB;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
+            border-color: var(--muj-orange);
+        }
+        .btn-brand {
+            background-color: var(--muj-orange);
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 11px;
+            font-weight: 600;
+            border: none;
+            transition: 0.2s ease;
+        }
+        .btn-brand:hover {
+            background-color: var(--muj-orange-hover);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <div class="text-center mb-4">
+        <div class="icon-circle mb-3">
+            <i class="bi bi-shield-lock-fill fs-4"></i>
+        </div>
+        <h3 class="fw-bold m-0" style="color: var(--muj-navy);">Portal Sign In</h3>
+        <p class="text-muted small">Manipal University Jaipur &bull; Lost & Found</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} py-2 px-3 small rounded-3 mb-3">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Campus Email</label>
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+                <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="name@jaipur.manipal.edu" required>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label small fw-semibold text-secondary">Password</label>
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-key"></i></span>
+                <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="••••••••" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-brand w-100 shadow-sm mb-3">
+            Sign In
+        </button>
+    </form>
+
+    <div class="text-center pt-2 border-top">
+        <p class="small text-muted mb-1">First time here? <a href="/register" class="fw-semibold text-decoration-none" style="color: var(--muj-orange);">Create an account</a></p>
+        <a href="/" class="small text-secondary text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Portal Feed</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

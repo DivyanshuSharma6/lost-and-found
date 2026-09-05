@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MUJ Admin & Security Operations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --muj-navy: #0D2240;
+            --muj-orange: #E65100;
+        }
+        body { 
+            background-color: #F4F6F9; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+        .navbar-admin { 
+            background-color: var(--muj-navy); 
+            border-bottom: 3px solid var(--muj-orange); 
+        }
+        .stat-card { 
+            border-radius: 12px; 
+            border: none; 
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark navbar-admin mb-4 py-3 shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/admin">
+      <i class="bi bi-shield-check text-warning me-2"></i>MUJ Security & Admin Portal
+    </a>
+    <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-left me-1"></i> Public Feed</a>
+  </div>
+</nav>
+
+<div class="container pb-5">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} py-2 rounded-3 mb-3">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Top Metrics Overview -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm stat-card bg-primary text-white">
+        <span class="small opacity-75 text-uppercase fw-semibold">Total Reports</span>
+        <h2 class="fw-bold m-0">{{ total_items }}</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm stat-card bg-danger text-white">
+        <span class="small opacity-75 text-uppercase fw-semibold">Active Lost</span>
+        <h2 class="fw-bold m-0">{{ lost_count }}</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm stat-card bg-success text-white">
+        <span class="small opacity-75 text-uppercase fw-semibold">Active Found</span>
+        <h2 class="fw-bold m-0">{{ found_count }}</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm stat-card bg-secondary text-white">
+        <span class="small opacity-75 text-uppercase fw-semibold">>30d Auto-Archived</span>
+        <h2 class="fw-bold m-0">{{ archived_count }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- Campus Hotspot Analytics -->
+    <div class="col-md-5">
+      <div class="card p-4 shadow-sm border-0 rounded-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Campus Hotspots</h5>
+        <p class="text-muted small">Campus zones with the highest reported frequency:</p>
+        <ul class="list-group list-group-flush">
+          {% for loc, count in zone_stats %}
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span><i class="bi bi-building me-2 text-secondary"></i>{{ loc }}</span>
+            <span class="badge bg-danger rounded-pill px-3">{{ count }} items</span>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted px-0">No spatial records logged yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Pending Claims Review -->
+    <div class="col-md-7">
+      <div class="card p-4 shadow-sm border-0 rounded-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-clock-history text-warning me-2"></i>Pending Ownership Claims</h5>
+        {% if claims %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle small">
+              <thead class="table-light">
+                <tr>
+                  <th>Item</th>
+                  <th>Claimant</th>
+                  <th>Ownership Proof</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in claims %}
+                <tr>
+                  <td>#{{ c.item_id }}</td>
+                  <td>{{ c.claimant.name }}<br><span class="text-muted">{{ c.claimant.email }}</span></td>
+                  <td>{{ c.proof_description }}</td>
+                  <td>
+                    <a href="/admin/claim/{{ c.id }}/approve" class="btn btn-success btn-sm mb-1 w-100">Approve</a>
+                    <a href="/admin/claim/{{ c.id }}/reject" class="btn btn-outline-danger btn-sm w-100">Reject</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="text-center text-muted my-auto py-4">
+            <i class="bi bi-check-circle fs-3 text-success d-block mb-2"></i>
+            No pending claims require verification.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Handover Records & PDF Certificates -->
+  <div class="card p-4 shadow-sm border-0 rounded-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>Approved Claims & Handover Certificates</h5>
+    {% if approved_claims %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle small">
+          <thead class="table-light">
+            <tr>
+              <th>Claim ID</th>
+              <th>Item ID</th>
+              <th>Verified Claimant</th>
+              <th>Approval Date</th>
+              <th>Official Clearance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ac in approved_claims %}
+            <tr>
+              <td>#MUJ-CLR-{{ "%04d" % ac.id }}</td>
+              <td>#{{ ac.item_id }}</td>
+              <td>{{ ac.claimant.name }} ({{ ac.claimant.email }})</td>
+              <td>{{ ac.created_at.strftime('%d %b %Y') }}</td>
+              <td>
+                <a href="/claim/certificate/{{ ac.id }}" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-download me-1"></i> Download PDF
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted small m-0">No approved handovers logged in the archive yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Content Moderation Table -->
+  <div class="card p-4 shadow-sm border-0 rounded-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-shield-shaded text-primary me-2"></i>Campus Post Moderation</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle small">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Reported On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in items %}
+          <tr>
+            <td>#{{ i.id }}</td>
+            <td>
+              <span class="badge {% if i.item_type == 'LOST' %}bg-danger{% else %}bg-success{% endif %}">
+                {{ i.item_type }}
+              </span>
+            </td>
+            <td class="fw-semibold">{{ i.title }}</td>
+            <td>{{ i.location }}</td>
+            <td>
+              <span class="badge {% if i.status == 'OPEN' %}bg-primary{% elif i.status == 'ARCHIVED' %}bg-secondary{% else %}bg-success{% endif %}">
+                {{ i.status }}
+              </span>
+            </td>
+            <td>{{ i.created_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <a href="/admin/item/delete/{{ i.id }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this post?')">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>
