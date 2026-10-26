@@ -839,7 +839,7 @@ def download_synopsis():
     )
 @app.route('/setup-admin-secret-2026')
 def setup_admin_secret():
-    admin_email = 'Divyanshusharma9352@gmail.com'
+    admin_email = 'Divyanshusharma9352@gmail.com'.strip().lower()
     user = User.query.filter_by(email=admin_email).first()
     
     if not user:
@@ -855,7 +855,6 @@ def setup_admin_secret():
         
     db.session.commit()
     return f"<h1>Success! Admin account activated: {admin_email} / Admin@12345</h1><p><a href='/login'>Go to Login</a></p>"
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     debug_mode = os.environ.get('FLASK_DEBUG') == '1'
