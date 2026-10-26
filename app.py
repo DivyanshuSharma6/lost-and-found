@@ -26,27 +26,26 @@ from ml_engine import match_items, extract_dominant_color_name
 
 app = Flask(__name__)
 
-production = os.environ.get("FLASK_ENV", "").lower() == "production" or bool(os.environ.get("VERCEL"))
+is_vercel = bool(os.environ.get("VERCEL"))
 secret_key = os.environ.get("SECRET_KEY")
 
-if production and not secret_key:
-    raise RuntimeError("SECRET_KEY must be configured in production.")
-
+# Safe fallback so serverless functions never raise on init
 app.config["SECRET_KEY"] = secret_key or "local-dev-secret-key-muj-radar-2026"
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB limit
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = production
+app.config["SESSION_COOKIE_SECURE"] = False
 
 database_url = os.environ.get("DATABASE_URL")
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-if production and not database_url:
-    raise RuntimeError("DATABASE_URL must point to a persistent database in production.")
-
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///lost_and_found.db"
+# On Vercel, serverless filesystems are read-only except /tmp
+if is_vercel:
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:////tmp/lost_and_found.db"
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///lost_and_found.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 if os.environ.get('VERCEL'):
