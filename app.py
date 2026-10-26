@@ -48,7 +48,9 @@ else:
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///lost_and_found.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-if os.environ.get('VERCEL'):
+is_vercel = bool(os.environ.get('VERCEL'))
+
+if is_vercel:
     UPLOAD_FOLDER = os.path.join('/tmp', 'uploads')
 else:
     UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
@@ -56,7 +58,13 @@ else:
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(app.instance_path, exist_ok=True)
+
+# Safely ignore instance folder creation on Vercel's read-only filesystem
+try:
+    if not is_vercel:
+        os.makedirs(app.instance_path, exist_ok=True)
+except OSError:
+    pass
 
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
 app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
