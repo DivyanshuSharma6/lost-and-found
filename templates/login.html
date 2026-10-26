@@ -3,119 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - MUJ Lost & Found</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Login | MUJ Campus Radar</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
     <style>
         :root {
             --muj-orange: #E65100;
             --muj-orange-hover: #D84315;
-            --muj-navy: #0D2240;
+            --muj-navy: #e11c1c;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(rgba(13, 34, 64, 0.82), rgba(8, 22, 43, 0.92)), 
-                        url('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl5Q5Cb_sZ1wCnlCgqPWOIxeS_Ja4-2ttJJjHLw6ykhJaD_Xws3rpGQVpq6IrrCYlDksLHVlZemW_eWMidN68IZsSvQeL5XqXzRwcjr7JuwYQCR1-NrJUYvHQlMzA96eZwzdG2g2nMQdhRI=s1360-w1360-h1020-rw');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            margin: 0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 24px 16px;
+
+            background:
+                linear-gradient(
+                    rgba(13, 34, 64, 0.82),
+                    rgba(8, 22, 43, 0.92)
+                ),
+                url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQh7qcXDMWLddArhF_2761b0zPcd2jeY3me4WwmY0hrZq9cQA1BH_9doto&s=10");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(14px);
-            border-radius: 16px;
-            border-top: 4px solid var(--muj-orange);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+        .login-container {
             width: 100%;
             max-width: 420px;
-            padding: 38px 32px;
         }
-        .icon-circle {
-            background-color: var(--muj-orange);
-            color: #ffffff;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            display: inline-flex;
+
+        .glass-card {
+            width: 100%;
+            padding: 38px 32px;
+            border-radius: 16px;
+            border-top: 5px solid var(--muj-orange);
+
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+        }
+
+        .brand-icon {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 18px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(230, 81, 0, 0.35);
+            color: white;
+            background: var(--muj-orange);
+            border-radius: 50%;
+            font-size: 34px;
+            box-shadow: 0 8px 20px rgba(230, 81, 0, 0.25);
         }
+
+        .brand-title {
+            color: var(--muj-navy);
+            font-size: 26px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .brand-subtitle {
+            color: #6c757d;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 26px;
+        }
+
+        .form-label {
+            color: var(--muj-navy);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-group-text {
+            color: var(--muj-orange);
+            background: #fff;
+            border-right: 0;
+        }
+
         .form-control {
-            border-radius: 8px;
-            padding: 10px 14px;
-            border: 1px solid #D1D5DB;
+            min-height: 46px;
+            border-left: 0;
+            font-size: 14px;
         }
+
         .form-control:focus {
-            box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
+            border-color: #ced4da;
+            box-shadow: none;
+        }
+
+        .input-group:focus-within .input-group-text,
+        .input-group:focus-within .form-control {
             border-color: var(--muj-orange);
         }
-        .btn-brand {
-            background-color: var(--muj-orange);
-            color: #ffffff;
-            border-radius: 8px;
-            padding: 11px;
-            font-weight: 600;
+
+        .btn-muj {
+            min-height: 46px;
+            color: white;
+            background: var(--muj-orange);
             border: none;
-            transition: 0.2s ease;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
-        .btn-brand:hover {
-            background-color: var(--muj-orange-hover);
-            color: #ffffff;
+
+        .btn-muj:hover {
+            color: white;
+            background: var(--muj-orange-hover);
+            transform: translateY(-1px);
+        }
+
+        .register-link {
+            color: var(--muj-orange);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .register-link:hover {
+            color: var(--muj-orange-hover);
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 22px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #ffd7bd;
+        }
+
+        .footer-text {
+            color: #6c757d;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 22px;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 30px 22px;
+            }
+
+            .brand-title {
+                font-size: 23px;
+            }
         }
     </style>
 </head>
+
 <body>
-
-<div class="glass-card">
-    <div class="text-center mb-4">
-        <div class="icon-circle mb-3">
-            <i class="bi bi-shield-lock-fill fs-4"></i>
-        </div>
-        <h3 class="fw-bold m-0" style="color: var(--muj-navy);">Portal Sign In</h3>
-        <p class="text-muted small">Manipal University Jaipur &bull; Lost & Found</p>
-    </div>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} py-2 px-3 small rounded-3 mb-3">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <form method="POST">
-        <div class="mb-3">
-            <label class="form-label small fw-semibold text-secondary">Campus Email</label>
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
-                <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="name@jaipur.manipal.edu" required>
+    <main class="login-container">
+        <section class="glass-card">
+            <div class="brand-icon">
+                <i class="bi bi-shield-lock-fill"></i>
             </div>
-        </div>
 
-        <div class="mb-4">
-            <label class="form-label small fw-semibold text-secondary">Password</label>
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-key"></i></span>
-                <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="••••••••" required>
+            <h1 class="brand-title">MUJ Campus Radar</h1>
+            <p class="brand-subtitle">Your campus lost &amp; found portal</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show py-2 px-3 small rounded-3 mb-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                        <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your campus email"
+                            autocomplete="email"
+                            required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-muj w-100">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <span class="text-secondary small">Don't have an account?</span>
+                <a href="{{ url_for('register') }}" class="register-link small ms-1">Register</a>
             </div>
+
+            <p class="footer-text">
+                MUJ Campus Radar &bull; Academic Project
+            </p>
+        </section>
+
+        <div class="text-center">
+            <a href="{{ url_for('index') }}" class="back-link">
+                <i class="bi bi-arrow-left me-1"></i>Back to Home Feed
+            </a>
         </div>
+    </main>
 
-        <button type="submit" class="btn btn-brand w-100 shadow-sm mb-3">
-            Sign In
-        </button>
-    </form>
-
-    <div class="text-center pt-2 border-top">
-        <p class="small text-muted mb-1">First time here? <a href="/register" class="fw-semibold text-decoration-none" style="color: var(--muj-orange);">Create an account</a></p>
-        <a href="/" class="small text-secondary text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Portal Feed</a>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

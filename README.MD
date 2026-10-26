@@ -21,4 +21,4 @@ An AI-driven campus asset recovery web application built for Manipal University 
 1. Clone repository:
    ```bash
    git clone <your-repo-url>
-   cd lost_and_found_bca
+   cd lost_and_found_bca# lost-link

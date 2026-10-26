@@ -3,27 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Finder Location</title>
+    <title>Track Finder Location | MUJ Campus Radar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        :root {
+            --muj-navy: #0D2240;
+            --muj-orange: #E65100;
+        }
+        body {
+            background-color: #F4F6F9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
         #map { 
             height: 480px; 
             width: 100%; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #E5E7EB;
         }
     </style>
 </head>
-<body class="bg-light p-4">
+<body class="p-3 p-md-4">
     <div class="container" style="max-width: 850px;">
-        <div class="card p-4 shadow-sm border-0">
+        <div class="card p-4 shadow-sm border-0 rounded-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h4 class="m-0 text-primary">Live Handover Tracking</h4>
+                    <h4 class="m-0 fw-bold" style="color: var(--muj-navy);">Live Handover Tracking</h4>
                     <p class="text-muted small m-0">Item: <strong>{{ item.title }}</strong> (Found at: {{ item.location }})</p>
                 </div>
-                <a href="/" class="btn btn-outline-secondary btn-sm px-3">Back to Feed</a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm px-3">Back to Feed</a>
             </div>
 
             <div id="statusAlert" class="alert alert-info py-2 d-flex align-items-center">
@@ -34,7 +43,7 @@
             <div id="map"></div>
 
             <div class="mt-3 text-muted small text-center">
-                Coordinates update automatically every 3 seconds while the finder keeps the broadcast active.
+                Coordinates update automatically every 3 seconds while the finder keeps their GPS broadcast active.
             </div>
         </div>
     </div>
@@ -43,17 +52,15 @@
     <script>
         const itemId = {{ item.id }};
         
-        // Initialize map centered at default coordinates
-        const map = L.map('map').setView([26.9124, 75.7873], 15);
+        // Centered by default around MUJ Jaipur coordinates [26.8439, 75.5652]
+        const map = L.map('map').setView([26.8439, 75.5652], 16);
 
-        // Load free OpenStreetMap map tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         let marker = null;
-        let accuracyCircle = null;
 
         function fetchLocation() {
             fetch(`/api/item/${itemId}/get-location`)
@@ -69,7 +76,7 @@
 
                         if (!marker) {
                             marker = L.marker(currentPos).addTo(map)
-                                .bindPopup('<strong>Finder with Item</strong><br>Meet here for handover.')
+                                .bindPopup('<strong>Finder with Item</strong><br>Coordinate handover here.')
                                 .openPopup();
                         } else {
                             marker.setLatLng(currentPos);
@@ -78,7 +85,7 @@
                         map.panTo(currentPos, { animate: true });
                     } else {
                         statusAlert.className = 'alert alert-warning py-2';
-                        statusAlert.innerHTML = 'Finder has not started live location sharing yet. Ask them to click "Share Live Location" from their dashboard.';
+                        statusAlert.innerHTML = 'Finder has not started live location sharing yet. Ask them to click "Share Live Location" from their card on the feed.';
                     }
                 })
                 .catch(err => {
@@ -86,7 +93,6 @@
                 });
         }
 
-        // Poll API every 3 seconds for continuous live movement
         setInterval(fetchLocation, 3000);
         fetchLocation();
     </script>
