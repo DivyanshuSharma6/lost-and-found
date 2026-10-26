@@ -837,6 +837,24 @@ def download_synopsis():
         download_name='MUJ_Campus_Radar_Synopsis.docx',
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
+@app.route('/setup-admin-secret-2026')
+def setup_admin_secret():
+    admin_email = 'admin@jaipur.manipal.edu'
+    user = User.query.filter_by(email=admin_email).first()
+    
+    if not user:
+        user = User(
+            name='Divyanshu Sharma',
+            email=admin_email,
+            password_hash=generate_password_hash('Admin@12345', method='pbkdf2:sha256'),
+            role='ADMIN'
+        )
+        db.session.add(user)
+    else:
+        user.role = 'ADMIN'
+        
+    db.session.commit()
+    return f"<h1>Success! Admin account activated: {admin_email} / Admin@12345</h1><p><a href='/login'>Go to Login</a></p>"
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
