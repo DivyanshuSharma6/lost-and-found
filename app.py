@@ -85,12 +85,15 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
-with app.app_context():
-    try:
-        db.create_all()
-    except Exception as e:
-        app.logger.warning(f"Database init warning: {e}")
-
+@app.before_request
+def ensure_db():
+    # Guarantees tables exist in /tmp SQLite on cold start
+    if not getattr(app, '_got_first_request', False):
+        try:
+            db.create_all()
+            app._got_first_request = True
+        except Exception as e:
+            app.logger.warning(f"DB creation on request error: {e}")
 @app.errorhandler(413)
 def request_entity_too_large(error):
     flash('The uploaded image is too large! Maximum allowed upload size is 16 MB.', 'danger')
@@ -839,7 +842,9 @@ def download_synopsis():
     )
 @app.route('/setup-admin-secret-2026')
 def setup_admin_secret():
-    admin_email = 'Divyanshusharma9352@gmail.com'.strip().lower()
+    db.create_all()  # Force create all tables first
+    
+    admin_email = 'divyanshusharma9352@gmail.com'
     user = User.query.filter_by(email=admin_email).first()
     
     if not user:
@@ -852,9 +857,10 @@ def setup_admin_secret():
         db.session.add(user)
     else:
         user.role = 'ADMIN'
+        user.password_hash = generate_password_hash('Admin@12345', method='pbkdf2:sha256')
         
     db.session.commit()
-    return f"<h1>Success! Admin account activated: {admin_email} / Admin@12345</h1><p><a href='/login'>Go to Login</a></p>"
+    return f"<h1>Success! Database ready and Admin activated:</h1><p>Email: <b>{admin_email}</b><br>Password: <b>Admin@12345</b></p><p><a href='/login'>Click here to Login</a></p>"
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     debug_mode = os.environ.get('FLASK_DEBUG') == '1'
