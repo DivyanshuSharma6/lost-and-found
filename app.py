@@ -839,7 +839,7 @@ def download_synopsis():
     )
 @app.route('/setup-admin-secret-2026')
 def setup_admin_secret():
-    admin_email = 'admin@jaipur.manipal.edu'
+    admin_email = 'Divyanshusharma9352@gmail.com'
     user = User.query.filter_by(email=admin_email).first()
     
     if not user:
